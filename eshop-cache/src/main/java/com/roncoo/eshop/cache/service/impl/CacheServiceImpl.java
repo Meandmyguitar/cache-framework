@@ -70,7 +70,6 @@ public class CacheServiceImpl implements CacheService {
 	
 	/**
 	 * 将店铺信息保存到本地的ehcache缓存中
-	 * @param productInfo
 	 */
 	@CachePut(value = CACHE_NAME, key = "'shop_info_'+#shopInfo.getId()")
 	public ShopInfo saveShopInfo2LocalCache(ShopInfo shopInfo) {
@@ -79,8 +78,6 @@ public class CacheServiceImpl implements CacheService {
 	
 	/**
 	 * 从本地ehcache缓存中获取店铺信息
-	 * @param productId
-	 * @return
 	 */
 	@Cacheable(value = CACHE_NAME, key = "'shop_info_'+#shopId")
 	public ShopInfo getShopInfoFromLocalCache(Long shopId) {
@@ -98,7 +95,6 @@ public class CacheServiceImpl implements CacheService {
 	
 	/**
 	 * 将店铺信息保存到redis中
-	 * @param productInfo 
 	 */
 	public void saveShopInfo2ReidsCache(ShopInfo shopInfo) {
 		SaveShopInfo2ReidsCacheCommand command = new SaveShopInfo2ReidsCacheCommand(shopInfo);
@@ -107,7 +103,6 @@ public class CacheServiceImpl implements CacheService {
 	
 	/**
 	 * 从redis中获取商品信息
-	 * @param productInfo 
 	 */
 	public ProductInfo getProductInfoFromReidsCache(Long productId) {
 		GetProductInfoFromReidsCacheCommand command = new GetProductInfoFromReidsCacheCommand(productId);
@@ -116,7 +111,6 @@ public class CacheServiceImpl implements CacheService {
 	
 	/**
 	 * 从redis中获取店铺信息
-	 * @param productInfo 
 	 */
 	public ShopInfo getShopInfoFromReidsCache(Long shopId) {
 		GetShopInfoFromReidsCacheCommand command = new GetShopInfoFromReidsCacheCommand(shopId);

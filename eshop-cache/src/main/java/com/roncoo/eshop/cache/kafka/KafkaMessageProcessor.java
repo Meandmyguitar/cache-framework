@@ -32,6 +32,7 @@ public class KafkaMessageProcessor implements Runnable {
 				.getBean("cacheService"); 
 	}
 	
+	@Override
 	@SuppressWarnings("unchecked")
 	public void run() {
 		ConsumerIterator<byte[], byte[]> it = kafkaStream.iterator();

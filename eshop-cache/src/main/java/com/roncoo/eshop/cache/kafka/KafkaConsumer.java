@@ -26,6 +26,7 @@ public class KafkaConsumer implements Runnable {
 		this.topic = topic;
 	}
 	
+	@Override
 	@SuppressWarnings("rawtypes")
 	public void run() {
 		Map<String, Integer> topicCountMap = new HashMap<String, Integer>();
