@@ -17,7 +17,7 @@ public class RequestQueue {
 	 * 内存队列
 	 */
 	private List<ArrayBlockingQueue<Request>> queues = 
-			new ArrayList<ArrayBlockingQueue<Request>>();
+			new ArrayList<>();
 	/**
 	 * 标识位map
 	 */

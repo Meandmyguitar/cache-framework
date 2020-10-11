@@ -73,6 +73,7 @@ public class ProductInventoryDBUpdateRequest implements Request {
 	/**
 	 * 获取商品id
 	 */
+	@Override
 	public Integer getProductId() {
 		return productInventory.getProductId();
 	}
