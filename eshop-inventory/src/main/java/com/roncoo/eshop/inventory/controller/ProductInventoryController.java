@@ -88,7 +88,7 @@ public class ProductInventoryController {
 		
 		try {
 			Request request = new ProductInventoryCacheRefreshRequest(
-					productId, productInventoryService);
+					productId, productInventoryService, false);
 			requestAsyncProcessService.process(request);
 			
 			// 将请求扔给service异步去处理以后，就需要while(true)一会儿，在这里hang住
@@ -129,7 +129,18 @@ public class ProductInventoryController {
 			productInventory = productInventoryService.findProductInventory(productId);
 			if(productInventory != null) {
 				// 将缓存刷新一下
-				productInventoryService.setProductInventoryCache(productInventory); 
+				// 这个过程，实际上是一个读操作请求，但是没有放在队列中串行处理，还是有数据不一致的问题
+//				productInventoryService.setProductInventoryCache(productInventory);
+				request = new ProductInventoryCacheRefreshRequest(
+						productId, productInventoryService, true);
+				requestAsyncProcessService.process(request);
+
+				// 代码运行到这里，有三种情况
+				// 1、就是说，上一次也是读请求，数据刷入了redis，但是redis LRU算法清除掉了，标志位还是false
+				// 所以此时下一个读请求是从缓存中拿不到数据的，再放一个读Request进队列，让数据刷新一下
+				// 2、可能再200ms内,就是读请求在队列中一直积压着，没做等待到它执行（在实际生产环境中，基本是比较坑了）
+				// 所以就直接查一次库，然后给队列里塞进去一个刷新缓存的请求
+				// 3、数据库里本身就是没有
 				return productInventory;
 			}
 		} catch (Exception e) {
