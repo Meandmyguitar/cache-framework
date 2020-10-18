@@ -10,7 +10,7 @@ public class FailureModeCommand extends HystrixCommand<Boolean> {
 	public FailureModeCommand(boolean failure) {
 		super(HystrixCommandGroupKey.Factory.asKey("FailureModeGroup"));
 		this.failure = failure;
-	}
+	} 
 	
 	@Override
 	protected Boolean run() throws Exception {

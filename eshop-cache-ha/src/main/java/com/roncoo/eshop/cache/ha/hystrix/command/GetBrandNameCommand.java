@@ -13,7 +13,7 @@ import com.roncoo.eshop.cache.ha.cache.local.BrandCache;
  * @author Administrator
  *
  */
-public class GetBrandNameCommand extends HystrixCommand<String> {
+public class  GetBrandNameCommand extends HystrixCommand<String> {
 	
 	private Long brandId;
 	

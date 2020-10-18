@@ -28,7 +28,7 @@ public class GetCityNameCommand extends HystrixCommand<String> {
 	}
 	
 	@Override
-	protected String run() throws Exception {
+	protected String run() {
 		return LocationCache.getCityName(cityId);
 	}
 	

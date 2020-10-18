@@ -4,12 +4,8 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 
 import com.alibaba.fastjson.JSONObject;
-import com.netflix.hystrix.HystrixCommand;
-import com.netflix.hystrix.HystrixCommandGroupKey;
-import com.netflix.hystrix.HystrixCommandKey;
-import com.netflix.hystrix.HystrixCommandProperties;
-import com.netflix.hystrix.HystrixThreadPoolKey;
-import com.netflix.hystrix.HystrixThreadPoolProperties;
+import com.netflix.hystrix.*;
+import com.netflix.hystrix.strategy.concurrency.HystrixConcurrencyStrategyDefault;
 import com.roncoo.eshop.cache.ha.cache.local.BrandCache;
 import com.roncoo.eshop.cache.ha.cache.local.LocationCache;
 import com.roncoo.eshop.cache.ha.http.HttpClientUtils;
@@ -31,27 +27,27 @@ public class GetProductInfoCommand extends HystrixCommand<ProductInfo> {
 				.andCommandKey(KEY)
 				.andThreadPoolKey(HystrixThreadPoolKey.Factory.asKey("GetProductInfoPool"))
 				.andThreadPoolPropertiesDefaults(HystrixThreadPoolProperties.Setter()
-						.withCoreSize(3)
-						.withMaximumSize(30) 
-						.withAllowMaximumSizeToDivergeFromCoreSize(true) 
-						.withKeepAliveTimeMinutes(1) 
-						.withMaxQueueSize(12)
-						.withQueueSizeRejectionThreshold(15)) 
+						.withCoreSize(3)//线程池核心线程数
+						.withMaximumSize(30)//最大线程数
+						.withAllowMaximumSizeToDivergeFromCoreSize(true)//允许线程池大小自动动态扩容
+						.withKeepAliveTimeMinutes(1)//线程空闲时间-释放
+						.withMaxQueueSize(12)//队列大小
+						.withQueueSizeRejectionThreshold(15))//和withMaxQueueSize取最小的
+
 				.andCommandPropertiesDefaults(HystrixCommandProperties.Setter()
-						.withCircuitBreakerRequestVolumeThreshold(30)
-						.withCircuitBreakerErrorThresholdPercentage(40)
-						.withCircuitBreakerSleepWindowInMilliseconds(3000)
-						.withExecutionTimeoutInMilliseconds(500)
-						.withFallbackIsolationSemaphoreMaxConcurrentRequests(30))
+						.withCircuitBreakerRequestVolumeThreshold(30)//10秒内经过流量
+						.withCircuitBreakerErrorThresholdPercentage(40)//40%
+						.withCircuitBreakerSleepWindowInMilliseconds(3000)//降级休眠3秒重新开启
+						.withExecutionTimeoutInMilliseconds(5000)//过期时间5秒，队列中的请求，超过5秒也会直接timeout
+						.withFallbackIsolationSemaphoreMaxConcurrentRequests(30))//fallback，sempahore限流，30个，避免太多的请求同时调用fallback被拒绝访问
 				);  
-//		super(HystrixCommandGroupKey.Factory.asKey("ProductInfoService"));
 		this.productId = productId;
 	}
 	
 	@Override
 	protected ProductInfo run() throws Exception {
-//		System.out.println("调用接口，查询商品数据，productId=" + productId); 
-//		
+		System.out.println("调用接口，查询商品数据，productId=" + productId);
+
 		if(productId.equals(-1L)) {
 			throw new Exception();
 		}
@@ -72,10 +68,10 @@ public class GetProductInfoCommand extends HystrixCommand<ProductInfo> {
 		return JSONObject.parseObject(response, ProductInfo.class);  
 	}
 	
-//	@Override
-//	protected String getCacheKey() {
-//		return "product_info_" + productId;
-//	}
+	@Override
+	protected String getCacheKey() {
+		return "product_info_" + productId;
+	}
 	
 	@Override
 	protected ProductInfo getFallback() {
@@ -92,7 +88,7 @@ public class GetProductInfoCommand extends HystrixCommand<ProductInfo> {
 			// 如果主流程的command都失败了，可能线程池都已经被占满了
 			// 降级command必须用自己的独立的线程池
 			super(Setter.withGroupKey(HystrixCommandGroupKey.Factory.asKey("ProductInfoService"))
-						.andCommandKey(HystrixCommandKey.Factory.asKey("FirstLevelFallbackCommand"))
+						.andCommandKey(HystrixCommandKey.Factory.asKey(" "))
 						.andThreadPoolKey(HystrixThreadPoolKey.Factory.asKey("FirstLevelFallbackPool"))
 			);  
 			this.productId = productId;
@@ -105,7 +101,7 @@ public class GetProductInfoCommand extends HystrixCommand<ProductInfo> {
 			if(productId.equals(-2L)) {
 				throw new Exception();
 			}
-			String url = "http://127.0.0.1:8082/getProductInfo?productId=" + productId;
+			String url =  "http://127.0.0.1:8082/getProductInfo?productId=" + productId;
 			String response = HttpClientUtils.sendGetRequest(url);
 			return JSONObject.parseObject(response, ProductInfo.class);  
 		}
@@ -136,9 +132,9 @@ public class GetProductInfoCommand extends HystrixCommand<ProductInfo> {
 		
 	}
 	
-//	public static void flushCache(Long productId) {
-//		HystrixRequestCache.getInstance(KEY,
-//                HystrixConcurrencyStrategyDefault.getInstance()).clear("product_info_" + productId);
-//	}
+	public static void flushCache(Long productId) {
+		HystrixRequestCache.getInstance(KEY,
+                HystrixConcurrencyStrategyDefault.getInstance()).clear("product_info_" + productId);
+	}
 	
 }
