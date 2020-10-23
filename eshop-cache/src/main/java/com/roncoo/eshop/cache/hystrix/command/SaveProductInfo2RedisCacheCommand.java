@@ -9,11 +9,11 @@ import com.netflix.hystrix.HystrixCommandProperties;
 import com.roncoo.eshop.cache.model.ProductInfo;
 import com.roncoo.eshop.cache.spring.SpringContext;
 
-public class SaveProductInfo2ReidsCacheCommand extends HystrixCommand<Boolean> {
+public class SaveProductInfo2RedisCacheCommand extends HystrixCommand<Boolean> {
 	
 	private ProductInfo productInfo;
 	
-	public SaveProductInfo2ReidsCacheCommand(ProductInfo productInfo) {
+	public SaveProductInfo2RedisCacheCommand(ProductInfo productInfo) {
 		super(Setter.withGroupKey(HystrixCommandGroupKey.Factory.asKey("RedisGroup"))
 				.andCommandPropertiesDefaults(HystrixCommandProperties.Setter()
 						.withExecutionTimeoutInMilliseconds(100)
@@ -25,7 +25,7 @@ public class SaveProductInfo2ReidsCacheCommand extends HystrixCommand<Boolean> {
 	}
 	
 	@Override
-	protected Boolean run() throws Exception {
+	protected Boolean run() {
 		JedisCluster jedisCluster = (JedisCluster) SpringContext.getApplicationContext()
 				.getBean("JedisClusterFactory"); 
 		String key = "product_info_" + productInfo.getId();

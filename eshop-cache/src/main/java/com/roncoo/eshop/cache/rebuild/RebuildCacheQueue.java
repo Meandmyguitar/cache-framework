@@ -6,12 +6,10 @@ import com.roncoo.eshop.cache.model.ProductInfo;
 
 /**
  * 重建缓存的内存队列
- * @author Administrator
- *
  */
 public class RebuildCacheQueue {
 
-	private ArrayBlockingQueue<ProductInfo> queue = new ArrayBlockingQueue<ProductInfo>(1000);
+	private ArrayBlockingQueue<ProductInfo> queue = new ArrayBlockingQueue<>(1000);
 	
 	public void putProductInfo(ProductInfo productInfo) {
 		try {
@@ -32,8 +30,6 @@ public class RebuildCacheQueue {
 	
 	/**
 	 * 内部单例类
-	 * @author Administrator
-	 *
 	 */
 	private static class Singleton {
 		

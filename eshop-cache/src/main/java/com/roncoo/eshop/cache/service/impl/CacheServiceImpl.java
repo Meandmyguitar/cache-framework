@@ -8,9 +8,9 @@ import org.springframework.stereotype.Service;
 
 import redis.clients.jedis.JedisCluster;
 
-import com.roncoo.eshop.cache.hystrix.command.GetProductInfoFromReidsCacheCommand;
+import com.roncoo.eshop.cache.hystrix.command.GetProductInfoFromRedisCacheCommand;
 import com.roncoo.eshop.cache.hystrix.command.GetShopInfoFromReidsCacheCommand;
-import com.roncoo.eshop.cache.hystrix.command.SaveProductInfo2ReidsCacheCommand;
+import com.roncoo.eshop.cache.hystrix.command.SaveProductInfo2RedisCacheCommand;
 import com.roncoo.eshop.cache.hystrix.command.SaveShopInfo2ReidsCacheCommand;
 import com.roncoo.eshop.cache.model.ProductInfo;
 import com.roncoo.eshop.cache.model.ShopInfo;
@@ -18,8 +18,6 @@ import com.roncoo.eshop.cache.service.CacheService;
 
 /**
  * 缓存Service实现类
- * @author Administrator
- *
  */
 @Service("cacheService")
 public class CacheServiceImpl implements CacheService {
@@ -31,8 +29,6 @@ public class CacheServiceImpl implements CacheService {
 	
 	/** 
 	 * 将商品信息保存到本地缓存中
-	 * @param productInfo
-	 * @return
 	 */
 	@CachePut(value = CACHE_NAME, key = "'key_'+#productInfo.getId()")
 	public ProductInfo saveLocalCache(ProductInfo productInfo) {
@@ -41,8 +37,6 @@ public class CacheServiceImpl implements CacheService {
 	
 	/**
 	 * 从本地缓存中获取商品信息
-	 * @param id 
-	 * @return
 	 */
 	@Cacheable(value = CACHE_NAME, key = "'key_'+#id")
 	public ProductInfo getLocalCache(Long id) {
@@ -51,7 +45,6 @@ public class CacheServiceImpl implements CacheService {
 	
 	/**
 	 * 将商品信息保存到本地的ehcache缓存中
-	 * @param productInfo
 	 */
 	@CachePut(value = CACHE_NAME, key = "'product_info_'+#productInfo.getId()")
 	public ProductInfo saveProductInfo2LocalCache(ProductInfo productInfo) {
@@ -60,8 +53,6 @@ public class CacheServiceImpl implements CacheService {
 	
 	/**
 	 * 从本地ehcache缓存中获取商品信息
-	 * @param productId
-	 * @return
 	 */
 	@Cacheable(value = CACHE_NAME, key = "'product_info_'+#productId")
 	public ProductInfo getProductInfoFromLocalCache(Long productId) {
@@ -86,10 +77,9 @@ public class CacheServiceImpl implements CacheService {
 	
 	/**
 	 * 将商品信息保存到redis中
-	 * @param productInfo 
 	 */
 	public void saveProductInfo2ReidsCache(ProductInfo productInfo) {
-		SaveProductInfo2ReidsCacheCommand command = new SaveProductInfo2ReidsCacheCommand(productInfo);
+		SaveProductInfo2RedisCacheCommand command = new SaveProductInfo2RedisCacheCommand(productInfo);
 		command.execute();
 	}
 	
@@ -105,7 +95,7 @@ public class CacheServiceImpl implements CacheService {
 	 * 从redis中获取商品信息
 	 */
 	public ProductInfo getProductInfoFromReidsCache(Long productId) {
-		GetProductInfoFromReidsCacheCommand command = new GetProductInfoFromReidsCacheCommand(productId);
+		GetProductInfoFromRedisCacheCommand command = new GetProductInfoFromRedisCacheCommand(productId);
 		return command.execute();
 	}
 	

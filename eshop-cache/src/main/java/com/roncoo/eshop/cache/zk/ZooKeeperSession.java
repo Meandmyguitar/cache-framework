@@ -86,7 +86,6 @@ public class ZooKeeperSession {
 	
 	/**
 	 * 获取分布式锁
-	 * @param productId
 	 */
 	public void acquireDistributedLock(String path) {
 		try {
@@ -115,7 +114,6 @@ public class ZooKeeperSession {
 	
 	/**
 	 * 获取分布式锁
-	 * @param productId
 	 */
 	public boolean acquireFastFailedDistributedLock(String path) {
 		try {
@@ -131,7 +129,6 @@ public class ZooKeeperSession {
 	
 	/**
 	 * 释放掉一个分布式锁
-	 * @param productId
 	 */
 	public void releaseDistributedLock(Long productId) {
 		String path = "/product-lock-" + productId;
@@ -145,7 +142,6 @@ public class ZooKeeperSession {
 	
 	/**
 	 * 释放掉一个分布式锁
-	 * @param productId
 	 */
 	public void releaseDistributedLock(String path) {
 		try {
@@ -183,8 +179,6 @@ public class ZooKeeperSession {
 	
 	/**
 	 * 建立zk session的watcher
-	 * @author Administrator
-	 *
 	 */
 	private class ZooKeeperWatcher implements Watcher {
 
@@ -199,8 +193,6 @@ public class ZooKeeperSession {
 	
 	/**
 	 * 封装单例的静态内部类
-	 * @author Administrator
-	 *
 	 */
 	private static class Singleton {
 		
@@ -218,7 +210,6 @@ public class ZooKeeperSession {
 	
 	/**
 	 * 获取单例
-	 * @return
 	 */
 	public static ZooKeeperSession getInstance() {
 		return Singleton.getInstance();

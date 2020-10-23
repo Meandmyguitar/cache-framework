@@ -9,8 +9,6 @@ import com.roncoo.eshop.cache.zk.ZooKeeperSession;
 
 /**
  * 缓存预热线程
- * @author Administrator
- *
  */
 public class CachePrewarmThread extends Thread {
 	
